@@ -19,9 +19,11 @@ function HomeScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
   const [markerInfo, setMarkerInfo] = useState(null);
 
+  console.log(infoVisible);
   const handleMarkerClick = (info) => {
+    infoVisible ? setInfoVisible(false) : setInfoVisible(true);
     setMarkerInfo(info);
-    setInfoVisible(true);
+    console.log(infoVisible);
   };
 
   return (
@@ -38,55 +40,53 @@ function HomeScreen() {
           />
           <Marker
             position={[51.505, -0.09]}
-            onClick={() =>
-              handleMarkerClick({
-                location: "51.505, -0.09",
-                humidity: "75%",
-                dangerLevel: "High",
-                otherInfo: "Recent heavy rainfall",
-              })
-            }
+            eventHandlers={{
+              click: handleMarkerClick,
+            }}
           >
             <Popup>Click for more info</Popup>
           </Marker>
         </MapContainer>
       </div>
       {infoVisible && (
-        <Card
+        <div
           style={{
             position: "absolute",
             bottom: "60px",
             width: "100%",
-            backgroundColor: "white",
             zIndex: 1000,
-            transition: "all 0.3s ease-in-out",
+            backgroundColor: "white",
+            transition: "transform 0.3s ease-in-out",
+            transform: infoVisible ? "translateY(0)" : "translateY(100%)",
           }}
         >
-          <Card.Body>
-            <Card.Title>Marker Information</Card.Title>
-            <Card.Text>
-              <strong>Location:</strong> {markerInfo.location}
-              <br />
-              <strong>Humidity:</strong> {markerInfo.humidity}
-              <br />
-              <strong>Danger Level:</strong> {markerInfo.dangerLevel}
-              <br />
-              <strong>Other Info:</strong> {markerInfo.otherInfo}
-            </Card.Text>
-            <button
-              onClick={() => setInfoVisible(false)}
-              style={{
-                background: "red",
-                color: "white",
-                border: "none",
-                padding: "10px",
-                borderRadius: "5px",
-              }}
-            >
-              Close
-            </button>
-          </Card.Body>
-        </Card>
+          <Card>
+            <Card.Body>
+              <Card.Title>Marker Information</Card.Title>
+              <Card.Text>
+                <strong>Location:</strong> {markerInfo.location}
+                <br />
+                <strong>Humidity:</strong> {markerInfo.humidity}
+                <br />
+                <strong>Danger Level:</strong> {markerInfo.dangerLevel}
+                <br />
+                <strong>Other Info:</strong> {markerInfo.otherInfo}
+              </Card.Text>
+              <button
+                onClick={() => setInfoVisible(false)}
+                style={{
+                  background: "red",
+                  color: "white",
+                  border: "none",
+                  padding: "10px",
+                  borderRadius: "5px",
+                }}
+              >
+                Close
+              </button>
+            </Card.Body>
+          </Card>
+        </div>
       )}
       <Navbar bg="light" variant="light" fixed="bottom">
         <Nav className="w-100 d-flex justify-content-around">
