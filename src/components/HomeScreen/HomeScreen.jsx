@@ -77,7 +77,7 @@ function HomeScreen() {
                 ),
             }}
           >
-            <Popup>Click for more info</Popup>
+            <Popup>{dados.endereco}</Popup>
           </Marker>
         </MapContainer>
       </div>
@@ -139,7 +139,7 @@ function HomeScreen() {
                         fontWeight: "bold",
                       }}
                     >
-                      Informações do sensor
+                      Alto Risco
                     </Card.Title>
                   </div>
                   <Card.Subtitle className="mb-2 text-muted">
@@ -194,7 +194,7 @@ function HomeScreen() {
                     borderRadius: "10px",
                   }}
                 >
-                  <InfoCard2 data={dados.data} endereco={dados.endereco} />
+                  <InfoCard2 data={dados.sensor} endereco={dados.endereco} />
                 </Card.Text>
                 <Card.Text
                   style={{
