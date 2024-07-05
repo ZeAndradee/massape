@@ -172,6 +172,20 @@ function HomeScreen() {
                 >
                   <InfoCard data={dados.data} />
                 </Card.Text>
+                <span style={{ fontWeight: "600", fontSize: "1rem" }}>
+                  Detalhes
+                </span>
+                <Card.Text
+                  style={{
+                    fontSize: "1rem",
+                    lineHeight: "1.5",
+                    background: "white",
+                    padding: "20px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <InfoCard data={dados.data} />
+                </Card.Text>
               </div>
             </Card.Body>
           </Card>
