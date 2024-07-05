@@ -80,15 +80,7 @@ function HomeScreen() {
                   position={[lat, lng]}
                   icon={pinIcon}
                   eventHandlers={{
-                    click: () =>
-                      handleMarkerClick(
-                        {
-                          humidity: "75%",
-                          dangerLevel: "High",
-                          otherInfo: "Recent heavy rainfall",
-                        },
-                        [lat, lng]
-                      ),
+                    click: () => handleMarkerClick(marcador, [lat, lng]),
                   }}
                 />
               );
@@ -208,7 +200,10 @@ function HomeScreen() {
                     borderRadius: "10px",
                   }}
                 >
-                  <InfoCard2 sensor={dados.sensor} endereco={dados.endereco} />
+                  <InfoCard2
+                    sensor={markerInfo.marknivel}
+                    endereco={markerInfo.markbairro}
+                  />
                 </Card.Text>
                 <Card.Text
                   style={{
@@ -219,7 +214,10 @@ function HomeScreen() {
                     borderRadius: "10px",
                   }}
                 >
-                  <InfoCard2 data={dados.data} endereco={dados.endereco} />
+                  <InfoCard2
+                    sensor={markerInfo.marknivel}
+                    endereco={markerInfo.markbairro}
+                  />
                 </Card.Text>
               </div>
             </Card.Body>
