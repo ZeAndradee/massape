@@ -40,7 +40,6 @@ function HomeScreen() {
   useEffect(() => {
     const getSensorStatus = async () => {
       const result = await handleSensorStatus();
-
       setMarcador(result);
     };
     getSensorStatus();
@@ -51,8 +50,13 @@ function HomeScreen() {
   const [markerInfo, setMarkerInfo] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alert, setAlert] = useState(null);
+  const [alertas, setAlertas] = useState([]);
+  const [alertCount, setAlertCount] = useState(0);
+
   const mapRef = useRef(null);
   const alertRef = useRef(alert);
+
+  const [primeiro, setPrimeiro] = useState(true);
 
   const handleMarkerClick = (info, position) => {
     setMarkerInfo(info);
@@ -72,6 +76,8 @@ function HomeScreen() {
       const response = await fetchAlerts();
       if (alertRef.current?.alertid !== response.alertid) {
         setAlert(response);
+        setAlertas(response);
+        setAlertCount(alertCount + 1);
         console.log("responseid", response?.alertid);
         console.log("alertid", alertRef.current?.alertid);
       }
@@ -81,7 +87,7 @@ function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    if (alert) {
+    if (alert && alertCount > 0) {
       setShowAlert(true);
     }
   }, [alert]);
@@ -138,7 +144,7 @@ function HomeScreen() {
           <Card
             style={{ border: "none", background: "#F7F7F6", height: "100%" }}
           >
-            <Card.Body style={{ overflowY: "auto" }}>
+            <Card.Body className="card-body" style={{ overflowY: "auto" }}>
               <div
                 className="head"
                 style={{
