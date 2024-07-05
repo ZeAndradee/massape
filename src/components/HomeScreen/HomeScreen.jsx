@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Container, Navbar, Nav, Card } from "react-bootstrap";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -12,6 +12,7 @@ import profileIcon from "../../assets/profile-icon.svg";
 import pinExclamation from "../../assets/alert-pin-icon.svg";
 import HighRiskIcon from "../../assets/high-risk-icon.svg";
 import closeIcon from "../../assets/close-icon.svg";
+import { handleSensorStatus } from "../../services/handleSensorStatus";
 
 const navItems = [
   { id: "home", icon: homeIcon, label: "Home" },
@@ -34,6 +35,13 @@ const pinIcon = new L.Icon({
 });
 
 function HomeScreen() {
+  useEffect(() => {
+    const getSensorStatus = async () => {
+      const result = await handleSensorStatus();
+    };
+    getSensorStatus();
+  }, []);
+
   const [activeNav, setActiveNav] = useState("home");
   const [infoVisible, setInfoVisible] = useState(false);
   const [markerInfo, setMarkerInfo] = useState(null);
