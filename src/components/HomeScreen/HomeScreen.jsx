@@ -1,14 +1,9 @@
 import React, { useState, useRef } from "react";
 import { Container, Navbar, Nav, Card } from "react-bootstrap";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 
+import InfoCard from "../InfoCard/InfoCard";
 import homeIcon from "../../assets/home-icon.svg";
 import searchIcon from "../../assets/search-icon.svg";
 import educationIcon from "../../assets/education-icon.svg";
@@ -23,7 +18,9 @@ const navItems = [
   { id: "education", icon: educationIcon, label: "Education" },
   { id: "profile", icon: profileIcon, label: "Profile" },
 ];
-
+const dados = {
+  data: "05/07/2024",
+};
 const pinIcon = new L.Icon({
   iconUrl: pinExclamation,
   iconSize: [48, 48],
@@ -36,18 +33,12 @@ function HomeScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
   const [markerInfo, setMarkerInfo] = useState(null);
   const mapRef = useRef(null);
-
   const handleMarkerClick = (info, position) => {
     setMarkerInfo(info);
     setInfoVisible(true);
     const map = mapRef.current;
     if (map) {
-      const targetLatLng = L.latLng(position[0], position[1]);
-      const targetPoint = map
-        .project(targetLatLng)
-        .subtract([0, map.getSize().y * 0.25]);
-      const newLatLng = map.unproject(targetPoint);
-      map.setView(newLatLng, map.getZoom());
+      map.flyTo(position, map.getZoom());
     }
   };
 
@@ -76,7 +67,7 @@ function HomeScreen() {
                     dangerLevel: "High",
                     otherInfo: "Recent heavy rainfall",
                   },
-                  [-8.003836069073893, -34.93713947299929]
+                  [-8.01083969073893, -34.93713947299929]
                 ),
             }}
           >
@@ -92,7 +83,7 @@ function HomeScreen() {
             height: "50%",
             width: "100%",
             zIndex: 1000,
-            backgroundColor: "white",
+            background: "#F7F7F6",
             transition: "transform 0.3s ease-in-out",
             transform: infoVisible ? "translateY(0)" : "translateY(100%)",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
@@ -101,7 +92,7 @@ function HomeScreen() {
             marginBottom: "10px",
           }}
         >
-          <Card style={{ border: "none" }}>
+          <Card style={{ border: "none", background: "#F7F7F6" }}>
             <Card.Body>
               <div
                 className="head"
@@ -109,6 +100,9 @@ function HomeScreen() {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  borderBottom: "1px solid #E7E7E7",
+                  paddingBottom: "10px",
+                  marginBottom: "20px",
                 }}
               >
                 <div className="titulo-subtitulo">
@@ -120,7 +114,7 @@ function HomeScreen() {
                       alignItems: "center",
                       justifyContent: "center",
                       marginBottom: "10px",
-                      gap: "10px",
+                      gap: "5px",
                     }}
                   >
                     <img src={HighRiskIcon} alt="" />
@@ -131,6 +125,8 @@ function HomeScreen() {
                         justifyContent: "center",
                         objectFit: "max-content",
                         margin: "0",
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
                       }}
                     >
                       Informações do sensor
@@ -157,16 +153,26 @@ function HomeScreen() {
                   <img src={closeIcon} alt="" />
                 </button>
               </div>
-
-              <Card.Text style={{ fontSize: "1rem", lineHeight: "1.5" }}>
-                <strong>Location:</strong> {markerInfo.location}
-                <br />
-                <strong>Humidity:</strong> {markerInfo.humidity}
-                <br />
-                <strong>Danger Level:</strong> {markerInfo.dangerLevel}
-                <br />
-                <strong>Other Info:</strong> {markerInfo.otherInfo}
-              </Card.Text>
+              <div
+                className="info"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                <Card.Text
+                  style={{
+                    fontSize: "1rem",
+                    lineHeight: "1.5",
+                    background: "white",
+                    padding: "20px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <InfoCard data={dados.data} />
+                </Card.Text>
+              </div>
             </Card.Body>
           </Card>
         </div>
@@ -197,7 +203,18 @@ function HomeScreen() {
                       : "invert(0%)",
                 }}
               />
-              <span>{item.label}</span>
+              <span
+                style={{
+                  color: activeNav === item.id ? "blue" : "black",
+                  fontWeight: activeNav === item.id ? "500" : "normal",
+                  filter:
+                    activeNav === item.id
+                      ? "invert(35%) sepia(99%) saturate(2810%) hue-rotate(218deg) brightness(100%) contrast(101%)"
+                      : "invert(0%)",
+                }}
+              >
+                {item.label}
+              </span>
             </Nav.Link>
           ))}
         </Nav>
