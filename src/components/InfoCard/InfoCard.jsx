@@ -7,11 +7,10 @@ const InfoCard = ({ data }) => {
         className="head-text"
         style={{ display: "flex", flexDirection: "column" }}
       >
-        <span className="mb-2 text-muted flex col">Monitoramento</span>
-        <span style={{ fontWeight: "500" }}>{data}</span>
+        <span className="text-muted flex col">Monitoramento</span>
+        <span style={{ fontWeight: "600" }}>{data}</span>
       </div>
-
-      <div className="teste">teste</div>
+      <div style={{ fontWeight: "600", color: "red" }}>Em tempo real</div>
     </>
   );
 };

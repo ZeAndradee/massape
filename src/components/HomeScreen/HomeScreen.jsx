@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 
 import InfoCard from "../InfoCard/InfoCard";
+import InfoCard2 from "../InfoCard/InfoCard2";
 import homeIcon from "../../assets/home-icon.svg";
 import searchIcon from "../../assets/search-icon.svg";
 import educationIcon from "../../assets/education-icon.svg";
@@ -18,9 +19,13 @@ const navItems = [
   { id: "education", icon: educationIcon, label: "Education" },
   { id: "profile", icon: profileIcon, label: "Profile" },
 ];
+
 const dados = {
   data: "05/07/2024",
+  sensor: "Sensor Massapé",
+  endereco: "Rua do nova, 123",
 };
+
 const pinIcon = new L.Icon({
   iconUrl: pinExclamation,
   iconSize: [48, 48],
@@ -33,6 +38,7 @@ function HomeScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
   const [markerInfo, setMarkerInfo] = useState(null);
   const mapRef = useRef(null);
+
   const handleMarkerClick = (info, position) => {
     setMarkerInfo(info);
     setInfoVisible(true);
@@ -80,6 +86,7 @@ function HomeScreen() {
           style={{
             position: "absolute",
             bottom: "60px",
+            minHeight: "50%",
             height: "50%",
             width: "100%",
             zIndex: 1000,
@@ -90,10 +97,13 @@ function HomeScreen() {
             borderRadius: "10px",
             padding: "20px",
             marginBottom: "10px",
+            overflowY: "auto",
           }}
         >
-          <Card style={{ border: "none", background: "#F7F7F6" }}>
-            <Card.Body>
+          <Card
+            style={{ border: "none", background: "#F7F7F6", height: "100%" }}
+          >
+            <Card.Body style={{ overflowY: "auto" }}>
               <div
                 className="head"
                 style={{
@@ -184,7 +194,18 @@ function HomeScreen() {
                     borderRadius: "10px",
                   }}
                 >
-                  <InfoCard data={dados.data} />
+                  <InfoCard2 data={dados.data} endereco={dados.endereco} />
+                </Card.Text>
+                <Card.Text
+                  style={{
+                    fontSize: "1rem",
+                    lineHeight: "1.5",
+                    background: "white",
+                    padding: "20px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <InfoCard2 data={dados.data} endereco={dados.endereco} />
                 </Card.Text>
               </div>
             </Card.Body>
