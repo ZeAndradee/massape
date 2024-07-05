@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Navbar, Nav, Card } from "react-bootstrap";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L, { marker } from "leaflet";
 
 import InfoCard from "../InfoCard/InfoCard";
@@ -13,7 +13,8 @@ import pinExclamation from "../../assets/alert-pin-icon.svg";
 import HighRiskIcon from "../../assets/high-risk-icon.svg";
 import closeIcon from "../../assets/close-icon.svg";
 import { handleSensorStatus } from "../../services/handleSensorStatus";
-
+import AlertPopup from "../Popup/Popup";
+import { fetchAlerts } from "../../services/fetchAlerts";
 const navItems = [
   { id: "home", icon: homeIcon, label: "Home" },
   { id: "search", icon: searchIcon, label: "Search" },
@@ -48,7 +49,10 @@ function HomeScreen() {
   const [activeNav, setActiveNav] = useState("home");
   const [infoVisible, setInfoVisible] = useState(false);
   const [markerInfo, setMarkerInfo] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alert, setAlert] = useState(null);
   const mapRef = useRef(null);
+  const alertRef = useRef(alert);
 
   const handleMarkerClick = (info, position) => {
     setMarkerInfo(info);
@@ -59,8 +63,33 @@ function HomeScreen() {
     }
   };
 
+  useEffect(() => {
+    alertRef.current = alert;
+  }, [alert]);
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const response = await fetchAlerts();
+      if (alertRef.current?.alertid !== response.alertid) {
+        setAlert(response);
+        console.log("responseid", response?.alertid);
+        console.log("alertid", alertRef.current?.alertid);
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (alert) {
+      setShowAlert(true);
+    }
+  }, [alert]);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <AlertPopup isVisible={showAlert} onClose={() => setShowAlert(false)} />
+
       <div style={{ flex: 1 }}>
         <MapContainer
           center={[-8.003836069073893, -34.93713947299929]}
