@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Container, Navbar, Nav, Card } from "react-bootstrap";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet";
+import L from "leaflet";
 
 import homeIcon from "../../assets/home-icon.svg";
 import searchIcon from "../../assets/search-icon.svg";
 import educationIcon from "../../assets/education-icon.svg";
 import profileIcon from "../../assets/profile-icon.svg";
+import pinExclamation from "../../assets/alert-pin-icon.svg";
+import HighRiskIcon from "../../assets/high-risk-icon.svg";
+import closeIcon from "../../assets/close-icon.svg";
 
 const navItems = [
   { id: "home", icon: homeIcon, label: "Home" },
@@ -14,56 +24,141 @@ const navItems = [
   { id: "profile", icon: profileIcon, label: "Profile" },
 ];
 
+const pinIcon = new L.Icon({
+  iconUrl: pinExclamation,
+  iconSize: [48, 48],
+  iconAnchor: [24, 48],
+  popupAnchor: [0, -48],
+});
+
 function HomeScreen() {
   const [activeNav, setActiveNav] = useState("home");
   const [infoVisible, setInfoVisible] = useState(false);
   const [markerInfo, setMarkerInfo] = useState(null);
+  const mapRef = useRef(null);
 
-  console.log(infoVisible);
-  const handleMarkerClick = (info) => {
-    infoVisible ? setInfoVisible(false) : setInfoVisible(true);
+  const handleMarkerClick = (info, position) => {
     setMarkerInfo(info);
-    console.log(infoVisible);
+    setInfoVisible(true);
+    const map = mapRef.current;
+    if (map) {
+      const targetLatLng = L.latLng(position[0], position[1]);
+      const targetPoint = map
+        .project(targetLatLng)
+        .subtract([0, map.getSize().y * 0.25]);
+      const newLatLng = map.unproject(targetPoint);
+      map.setView(newLatLng, map.getZoom());
+    }
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <div style={{ flex: 1 }}>
         <MapContainer
-          center={[51.505, -0.09]}
+          center={[-8.003836069073893, -34.93713947299929]}
           zoom={13}
           style={{ height: "100%", width: "100%" }}
+          ref={mapRef}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <Marker
-            position={[51.505, -0.09]}
+            position={[-8.003836069073893, -34.93713947299929]}
+            icon={pinIcon}
             eventHandlers={{
-              click: handleMarkerClick,
+              click: () =>
+                handleMarkerClick(
+                  {
+                    location: "51.505, -0.09",
+                    humidity: "75%",
+                    dangerLevel: "High",
+                    otherInfo: "Recent heavy rainfall",
+                  },
+                  [-8.003836069073893, -34.93713947299929]
+                ),
             }}
           >
             <Popup>Click for more info</Popup>
           </Marker>
         </MapContainer>
       </div>
-      {infoVisible && (
+      {infoVisible && markerInfo && (
         <div
           style={{
             position: "absolute",
             bottom: "60px",
+            height: "50%",
             width: "100%",
             zIndex: 1000,
             backgroundColor: "white",
             transition: "transform 0.3s ease-in-out",
             transform: infoVisible ? "translateY(0)" : "translateY(100%)",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            borderRadius: "10px",
+            padding: "20px",
+            marginBottom: "10px",
           }}
         >
-          <Card>
+          <Card style={{ border: "none" }}>
             <Card.Body>
-              <Card.Title>Marker Information</Card.Title>
-              <Card.Text>
+              <div
+                className="head"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div className="titulo-subtitulo">
+                  <div
+                    className="icone-titulo"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      gap: "10px",
+                    }}
+                  >
+                    <img src={HighRiskIcon} alt="" />
+                    <Card.Title
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        objectFit: "max-content",
+                        margin: "0",
+                      }}
+                    >
+                      Informações do sensor
+                    </Card.Title>
+                  </div>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    Dois Irmãos
+                  </Card.Subtitle>
+                </div>
+                <button
+                  onClick={() => setInfoVisible(false)}
+                  style={{
+                    background: "#E7E7E7",
+                    color: "white",
+                    border: "none",
+                    alignContent: "center",
+                    justifyContent: "center",
+                    padding: "10px 15px",
+                    borderRadius: "50px",
+                    cursor: "pointer",
+                    float: "right",
+                  }}
+                >
+                  <img src={closeIcon} alt="" />
+                </button>
+              </div>
+
+              <Card.Text style={{ fontSize: "1rem", lineHeight: "1.5" }}>
                 <strong>Location:</strong> {markerInfo.location}
                 <br />
                 <strong>Humidity:</strong> {markerInfo.humidity}
@@ -72,18 +167,6 @@ function HomeScreen() {
                 <br />
                 <strong>Other Info:</strong> {markerInfo.otherInfo}
               </Card.Text>
-              <button
-                onClick={() => setInfoVisible(false)}
-                style={{
-                  background: "red",
-                  color: "white",
-                  border: "none",
-                  padding: "10px",
-                  borderRadius: "5px",
-                }}
-              >
-                Close
-              </button>
             </Card.Body>
           </Card>
         </div>
