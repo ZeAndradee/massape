@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Navbar, Nav, Card } from "react-bootstrap";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
+import L, { marker } from "leaflet";
 
 import InfoCard from "../InfoCard/InfoCard";
 import InfoCard2 from "../InfoCard/InfoCard2";
@@ -35,9 +35,12 @@ const pinIcon = new L.Icon({
 });
 
 function HomeScreen() {
+  const [marcador, setMarcador] = useState([]);
   useEffect(() => {
     const getSensorStatus = async () => {
       const result = await handleSensorStatus();
+
+      setMarcador(result);
     };
     getSensorStatus();
   }, []);
@@ -69,24 +72,27 @@ function HomeScreen() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          <Marker
-            position={[-8.003836069073893, -34.93713947299929]}
-            icon={pinIcon}
-            eventHandlers={{
-              click: () =>
-                handleMarkerClick(
-                  {
-                    location: "51.505, -0.09",
-                    humidity: "75%",
-                    dangerLevel: "High",
-                    otherInfo: "Recent heavy rainfall",
-                  },
-                  [-8.01083969073893, -34.93713947299929]
-                ),
-            }}
-          >
-            <Popup>{dados.endereco}</Popup>
-          </Marker>
+          {marcador &&
+            marcador.map((marcador) => {
+              const [lat, lng] = marcador.markcoord.split(",").map(Number);
+              return (
+                <Marker
+                  position={[lat, lng]}
+                  icon={pinIcon}
+                  eventHandlers={{
+                    click: () =>
+                      handleMarkerClick(
+                        {
+                          humidity: "75%",
+                          dangerLevel: "High",
+                          otherInfo: "Recent heavy rainfall",
+                        },
+                        [lat, lng]
+                      ),
+                  }}
+                />
+              );
+            })}
         </MapContainer>
       </div>
       {infoVisible && markerInfo && (
@@ -202,7 +208,7 @@ function HomeScreen() {
                     borderRadius: "10px",
                   }}
                 >
-                  <InfoCard2 data={dados.sensor} endereco={dados.endereco} />
+                  <InfoCard2 sensor={dados.sensor} endereco={dados.endereco} />
                 </Card.Text>
                 <Card.Text
                   style={{

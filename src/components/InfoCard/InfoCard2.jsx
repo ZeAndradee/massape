@@ -1,6 +1,6 @@
 import React from "react";
 
-const InfoCard = ({ data, endereco }) => {
+const InfoCard = ({ sensor, endereco }) => {
   return (
     <>
       <div
@@ -15,7 +15,7 @@ const InfoCard = ({ data, endereco }) => {
         }}
       >
         <span className="text-muted flex col">Reportado por</span>
-        <span style={{ fontWeight: "500", color: "#1AB3FF" }}>{data}</span>
+        <span style={{ fontWeight: "500", color: "#1AB3FF" }}>{sensor}</span>
       </div>
       <div
         className="head-text"
