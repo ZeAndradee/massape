@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Container, Navbar, Nav, Card } from "react-bootstrap";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L, { marker } from "leaflet";
 
 import InfoCard from "../InfoCard/InfoCard";
@@ -13,7 +13,7 @@ import pinExclamation from "../../assets/alert-pin-icon.svg";
 import HighRiskIcon from "../../assets/high-risk-icon.svg";
 import closeIcon from "../../assets/close-icon.svg";
 import { handleSensorStatus } from "../../services/handleSensorStatus";
-
+import AlertPopup from "../Popup/Popup";
 const navItems = [
   { id: "home", icon: homeIcon, label: "Home" },
   { id: "search", icon: searchIcon, label: "Search" },
@@ -48,6 +48,7 @@ function HomeScreen() {
   const [activeNav, setActiveNav] = useState("home");
   const [infoVisible, setInfoVisible] = useState(false);
   const [markerInfo, setMarkerInfo] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
   const mapRef = useRef(null);
 
   const handleMarkerClick = (info, position) => {
@@ -61,6 +62,8 @@ function HomeScreen() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <AlertPopup isVisible={showAlert} onClose={() => setShowAlert(false)} />
+
       <div style={{ flex: 1 }}>
         <MapContainer
           center={[-8.003836069073893, -34.93713947299929]}
@@ -87,6 +90,7 @@ function HomeScreen() {
             })}
         </MapContainer>
       </div>
+
       {infoVisible && markerInfo && (
         <div
           style={{
@@ -95,7 +99,7 @@ function HomeScreen() {
             minHeight: "50%",
             height: "50%",
             width: "100%",
-            zIndex: 1000,
+            zIndex: 1,
             background: "#F7F7F6",
             transition: "transform 0.3s ease-in-out",
             transform: infoVisible ? "translateY(0)" : "translateY(100%)",
